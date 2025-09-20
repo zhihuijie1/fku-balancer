@@ -1,0 +1,20 @@
+schema: http
+port: 8088
+tcp_health_check: true
+health_check_interval: 3
+max_allowed: 100
+location:
+  - pattern: /
+    proxy_pass:
+      - "http://localhost:8001"    # 测试服务器1
+      - "http://localhost:8002"    # 测试服务器2
+      - "http://localhost:8003"    # 测试服务器3
+    balance_mode: round-robin
+
+
+  - pattern: /api
+    proxy_pass:
+      - "http://localhost:8004"    # 测试服务器4
+      - "http://localhost:8005"    # 测试服务器5
+      - "http://localhost:8006"    # 测试服务器6
+    balance_mode: ip-hash
