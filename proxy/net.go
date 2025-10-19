@@ -6,7 +6,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
+
+var ConnectionTimeout = 3 * time.Second
 
 // 根据请求,拿到客户端真实IP
 func GetIP(r *http.Request) string {
@@ -37,4 +40,24 @@ func GetHost(url *url.URL) string {
 		return fmt.Sprintf("%s:%s", url.Host, "443")
 	}
 	return url.Host
+}
+
+// IsBackendAlive 检查后端服务是否存活
+// 通过尝试建立 TCP 连接来判断目标主机是否可访问
+func IsBackendAlive(host string) bool {
+	// 解析主机地址为 TCP 地址
+	addr, err := net.ResolveTCPAddr("tcp", host)
+	if err != nil {
+		return false
+	}
+
+	resolveAddr := fmt.Sprintf("%s:%d", addr.IP, addr.Port)
+
+	conn, err := net.DialTimeout("tcp", resolveAddr, ConnectionTimeout)
+	if err != nil {
+		return false
+	}
+
+	_ = conn.Close()
+	return true
 }
