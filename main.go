@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
+	"fku-balancer/proxy"
 	"log"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -24,6 +26,19 @@ func main() {
 	router := mux.NewRouter()
 
 	// 4为每个路由配置创建反向代理
+	for _, l := range config.Location {
+		httpProxy, err := proxy.NewHttpProxy(l.Proxy_pass, l.Balance_mode)
+
+		if err != nil {
+			log.Fatalf("create proxy error: %s", err)
+		}
+
+		if config.Tcp_health_check {
+			httpProxy.HealthCheck(config.Health_check_interval)
+		}
+
+		router.Handle(l.Pattern, httpProxy)
+	}
 
 	// 5添加中间件（如果配置了最大并发数）
 	// 中间件是在请求到达处理器之前/之后执行的代码

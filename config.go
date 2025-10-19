@@ -25,7 +25,7 @@ type Config struct {
 type Location struct {
 	Pattern      string   `yaml:"pattern"`
 	Proxy_pass   []string `yaml:"proxy_pass"`
-	Palance_mode string   `yaml:"balance_mode"`
+	Balance_mode string   `yaml:"balance_mode"`
 }
 
 func ReadConfig(filename string) (*Config, error) {
@@ -47,7 +47,7 @@ func Print(config *Config) {
 
 	l := config.Location
 	for _, v := range l {
-		fmt.Printf("pattern: %s\n, proxy_pass: %s\n, palance_mode: %s\n", v.Pattern, v.Proxy_pass, v.Palance_mode)
+		fmt.Printf("pattern: %s\n, proxy_pass: %s\n, palance_mode: %s\n", v.Pattern, v.Proxy_pass, v.Balance_mode)
 	}
 }
 

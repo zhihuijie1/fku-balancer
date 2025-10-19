@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"fku-balancer/balancer"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -63,4 +64,24 @@ func NewHttpProxy(targetHosts []string, algorithm string) (*HttpProxy, error) {
 		lb:      lb,
 		alive:   aliveMap,
 	}, nil
+}
+
+// ServeHTTP 是HTTP反向代理的核心方法
+func (h *HttpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	host, err := h.lb.Balance(GetIP(r))
+
+	if err != nil {
+		// 选择失败（如没有可用服务器）
+		// 返回502错误
+		w.WriteHeader(http.StatusBadGateway)
+		_, _ = w.Write([]byte(fmt.Sprintf("balance error: %s", err.Error())))
+		return
+	}
+
+	h.lb.Inc(host)
+
+	defer h.lb.Done(host)
+
+	h.hostMap[host].ServeHTTP(w, r)
 }
