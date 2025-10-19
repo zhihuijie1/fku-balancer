@@ -66,7 +66,8 @@ func NewHttpProxy(targetHosts []string, algorithm string) (*HttpProxy, error) {
 	}, nil
 }
 
-// ServeHTTP 是HTTP反向代理的核心方法
+// ServeHTTP 实现http.Handler接口，处理HTTP请求
+// 这是反向代理的核心方法，负责接收请求并转发
 func (h *HttpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	host, err := h.lb.Balance(GetIP(r))
