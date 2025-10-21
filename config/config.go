@@ -53,7 +53,7 @@ func (config *Config) Print() {
 
 // 验证配置文件的合理性
 func (c *Config) Validation() error {
-	if c.Schema != "http" || c.Schema != "https" {
+	if c.Schema != "http" && c.Schema != "https" {
 		return fmt.Errorf("the schema \"%s\" not supported", c.Schema)
 	}
 

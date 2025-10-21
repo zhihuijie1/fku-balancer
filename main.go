@@ -1,19 +1,21 @@
 package main
 
 import (
-	config2 "fku-balancer/config"
+	"fku-balancer/config"
 	"fku-balancer/midWare"
 	"fku-balancer/proxy"
+	"fku-balancer/request"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	// 1读配置文件
-	config, err := config2.ReadConfig("config.yml")
+	config, err := config.ReadConfig("config/config.yaml")
 	if err != nil {
 		// log.Fatalf：打印错误信息后调用os.Exit(1)终止程序
 		log.Fatalf("read config error: %s", err)
@@ -68,6 +70,12 @@ func main() {
 	config.Print()
 
 	// 第十步：启动服务器监听
+
+	go func() {
+		time.Sleep(2 * time.Second)
+
+		request.FirstRequest()
+	}()
 
 	if config.Schema == "http" {
 		server.ListenAndServe()
