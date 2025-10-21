@@ -1,15 +1,19 @@
 package main
 
 import (
+	config2 "fku-balancer/config"
+	"fku-balancer/midWare"
 	"fku-balancer/proxy"
 	"log"
+	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	// 1读配置文件
-	config, err := ReadConfig("config.yml")
+	config, err := config2.ReadConfig("config.yml")
 	if err != nil {
 		// log.Fatalf：打印错误信息后调用os.Exit(1)终止程序
 		log.Fatalf("read config error: %s", err)
@@ -43,10 +47,33 @@ func main() {
 	// 5添加中间件（如果配置了最大并发数）
 	// 中间件是在请求到达处理器之前/之后执行的代码
 	// 这里的中间件用于限制并发请求数
+	// 传入的参数是: mwf ...MiddlewareFunc,这是一个可变参数,可以传入多个中间件
+	// 当有多个中间件的时候,middlware会按照顺序执行,可以直接传入一个中间件切片
+	// MiddlewareFunc 是一个函数类型 type MiddlewareFunc func(http.Handler) http.Handler
+	midwares := []mux.MiddlewareFunc{
+		midWare.PathAnalysMidWare(config),
+		midWare.MaxRequestMidWare(config.Max_allowed),
+	}
+	for _, mid := range midwares {
+		router.Use(mid)
+	}
 
 	// 第八步：创建HTTP服务器
+	server := http.Server{
+		Addr:    ":" + strconv.Itoa(config.Port),
+		Handler: router,
+	}
 
 	// 第九步：打印配置信息
+	config.Print()
 
 	// 第十步：启动服务器监听
+
+	if config.Schema == "http" {
+		server.ListenAndServe()
+		if err != nil {
+			// 通常是端口被占用或权限不足
+			log.Fatalf("listen and serve error: %s", err)
+		}
+	}
 }
