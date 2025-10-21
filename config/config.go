@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"errors"
@@ -41,7 +41,7 @@ func ReadConfig(filename string) (*Config, error) {
 	return &config, nil
 }
 
-func Print(config *Config) {
+func (config *Config) Print() {
 	fmt.Printf("schema: %s\n port: %s\n, tcp_health_check: %s\n, health_check_interval: %s\n, max_allowed: %s\n",
 		config.Schema, config.Port, config.Tcp_health_check, config.Health_check_interval, config.Max_allowed)
 
