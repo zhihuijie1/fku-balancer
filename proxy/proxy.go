@@ -72,6 +72,8 @@ func (h *HttpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	host, err := h.lb.Balance(GetIP(r))
 
+	fmt.Println("拿到的host: ", host)
+
 	if err != nil {
 		// 选择失败（如没有可用服务器）
 		// 返回502错误
