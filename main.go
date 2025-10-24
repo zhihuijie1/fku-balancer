@@ -27,6 +27,8 @@ func main() {
 		log.Fatalf("validation config error: %s", err)
 	}
 
+	PathIsStart(config)
+
 	// 3 启动http路由器
 	// gorilla/mux是一个功能强大的URL路由器和调度器
 	router := mux.NewRouter()

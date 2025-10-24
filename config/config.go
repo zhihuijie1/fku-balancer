@@ -8,6 +8,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var (
+	sciiArt = `
+ .-----.-----.______.-----.----.-----.--.--.--.--.
+ |  _  |  _  |______|  _  |   _|  _  |_   _|  |  |
+ |___  |_____|      |   __|__| |_____|__.__|___  |
+ |_____|            |__|                   |_____|
+ `
+)
+
 // 负责读取、解析和使用变量存储配置文件中自定义的配置
 // SSLCertificateKey 当schema为https时,存储https的私钥文件路径
 // SSLCertificate 当schema为https时,存储https的证书文件路径
@@ -42,12 +51,13 @@ func ReadConfig(filename string) (*Config, error) {
 }
 
 func (config *Config) Print() {
+	fmt.Println(sciiArt)
 	fmt.Printf("schema: %s\n port: %s\n, tcp_health_check: %s\n, health_check_interval: %s\n, max_allowed: %s\n",
 		config.Schema, config.Port, config.Tcp_health_check, config.Health_check_interval, config.Max_allowed)
 
 	l := config.Location
 	for _, v := range l {
-		fmt.Printf("pattern: %s\n, proxy_pass: %s\n, palance_mode: %s\n", v.Pattern, v.Proxy_pass, v.Balance_mode)
+		fmt.Printf("pattern: %s\n, proxy_pass: %s\n, balance_mode: %s\n", v.Pattern, v.Proxy_pass, v.Balance_mode)
 	}
 }
 
